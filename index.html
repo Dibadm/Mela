@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loan Registration</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fffbe6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 90%;
+      padding: 30px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #d4af37;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #fdd835;
+      color: #333;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #fbc02d;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .payment {
+      color: #d4af37;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Register for Loan</h2>
+    <form id="registerForm">
+      <input type="tel" id="phone" placeholder="Phone Number" required />
+      <input type="password" id="password" placeholder="Create Password" minlength="6" required />
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="result" id="result"></div>
+
+    <!-- Manual Close Button -->
+    <button id="closeBtn" style="display: none;" onclick="closeWebApp()">Close</button>
+  </div>
+
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js "></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('registerForm');
+      const resultDiv = document.getElementById('result');
+      const closeBtn = document.getElementById('closeBtn');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        // Clear previous messages
+        resultDiv.innerHTML = '';
+        closeBtn.style.display = 'none';
+
+        // Basic validation
+        if (!/^\d{10}$/.test(phone)) {
+          resultDiv.innerHTML = '<div class="error">Please enter a valid 10-digit phone number.</div>';
+          return;
+        }
+
+        if (password.length < 6) {
+          resultDiv.innerHTML = '<div class="error">Password must be at least 6 characters.</div>';
+          return;
+        }
+
+        // Show success message with deposit method
+        resultDiv.innerHTML = `
+          <div class="success">✅ Registration Successful!</div>
+          <div class="payment">Deposit Method: <strong>CBEbirr</strong></div>
+          <div class="payment">Account Number: <strong>0931538123</strong></div>
+          <div class="payment"><small>Please send 1000 ETB to activate your loan.</small></div>
+        `;
+
+        // Show manual close button
+        closeBtn.style.display = 'block';
+      });
+
+      function closeWebApp() {
+        if (window.Telegram && window.Telegram.WebApp) {
+          Telegram.WebApp.close();
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
